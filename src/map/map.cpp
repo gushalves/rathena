@@ -85,6 +85,7 @@ char mob_skill2_table[32] = "mob_skill_db2";
 char sales_table[32] = "sales";
 char vendings_table[32] = "vendings";
 char vending_items_table[32] = "vending_items";
+char vending_assistant_items_table[32] = "vending_assistant_items";
 char market_table[32] = "market";
 char roulette_table[32] = "db_roulette";
 char guild_storage_log_table[32] = "guild_storage_log";

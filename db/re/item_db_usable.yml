@@ -48728,6 +48728,48 @@ Body:
     Script: |
       input .@megaphone$;
       announce strcharinfo(0) + ": " + .@megaphone$,bc_all,0xFF0000;
+  - Id: 23348
+    AegisName: Vend_Arbeit_1Lv
+    Name: Consignment Merchant Voucher Lv1
+    Type: Delayconsume
+    Weight: 0
+    Script: |
+      itemskill "ALL_ASSISTANT_VENDING",1,true;
+  - Id: 23349
+    AegisName: Vend_Arbeit_2Lv
+    Name: Consignment Merchant Voucher Lv2
+    Type: Delayconsume
+    Weight: 0
+    Script: |
+      itemskill "ALL_ASSISTANT_VENDING",2,true;
+  - Id: 23350
+    AegisName: Vend_Arbeit_3Lv
+    Name: Consignment Merchant Voucher Lv3
+    Type: Delayconsume
+    Weight: 0
+    Script: |
+      itemskill "ALL_ASSISTANT_VENDING",3,true;
+  - Id: 23351
+    AegisName: Buy_Arbeit_1Lv
+    Name: Personal Shopper Voucher Lv1
+    Type: Delayconsume
+    Weight: 0
+    Script: |
+      itemskill "ALL_ASSISTANT_BUYING",1,true;
+  - Id: 23352
+    AegisName: Buy_Arbeit_2Lv
+    Name: Personal Shopper Voucher Lv2
+    Type: Delayconsume
+    Weight: 0
+    Script: |
+      itemskill "ALL_ASSISTANT_BUYING",2,true;
+  - Id: 23352
+    AegisName: Buy_Arbeit_3Lv
+    Name: Personal Shopper Voucher Lv3
+    Type: Delayconsume
+    Weight: 0
+    Script: |
+      itemskill "ALL_ASSISTANT_BUYING",3,true;
   - Id: 23388
     AegisName: CookingBox10
     Name: "[Scroll] Food Box"

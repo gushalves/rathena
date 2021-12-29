@@ -16,6 +16,9 @@
 	#error Please define PACKETVER in src/config/packets.hpp
 #endif
 
+/// Comment to disable vending assistant [Secret]
+#define ENABLE_VENDING_ASSISTANT 1
+
 ///Remove/Comment this line to disable sc_data saving. [Skotlex]
 #define ENABLE_SC_SAVING
 /** Remove/Comment this line to disable server-side hot-key saving support [Skotlex]

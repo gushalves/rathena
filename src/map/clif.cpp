@@ -1668,7 +1668,11 @@ int clif_spawn( struct block_list *bl, bool walking ){
 
 	if( bl->type == BL_NPC && !vd->dead_sit ){
 		clif_set_unit_idle( bl, walking, AREA_WOS, bl );
-	}else{
+	}
+	else if (bl->type == BL_ASSISTANT) {
+		clif_spawn_assistant(BL_CAST(BL_ASSISTANT, bl));
+	}
+	else{
 		clif_spawn_unit( bl, AREA_WOS );
 	}
 
@@ -2845,6 +2849,8 @@ void clif_dropitem(struct map_session_data *sd,int n,int amount)
 ///     5 = Moved to cart
 ///     6 = Item sold
 ///     7 = Consumed by Four Spirit Analysis (SO_EL_ANALYSIS) skill
+///     8 = Unknown
+///     9 = Vending with vending assistant
 void clif_delitem(struct map_session_data *sd,int n,int amount, short reason)
 {
 #if PACKETVER < 20091117
@@ -4964,7 +4970,11 @@ void clif_getareachar_unit( struct map_session_data* sd,struct block_list *bl ){
 
 	if( ud && ud->walktimer != INVALID_TIMER ){
 		clif_set_unit_walking( bl, sd, ud, SELF );
-	}else{
+	}
+	else if (bl->type == BL_ASSISTANT) {
+		clif_spawn_assistant((assistant_data*)bl, sd);
+	}
+	else{
 		clif_set_unit_idle( bl, false, SELF, &sd->bl );
 	}
 
@@ -5539,6 +5549,9 @@ int clif_outsight(struct block_list *bl,va_list ap)
 		case BL_NPC:
 			if(!(((TBL_NPC*)bl)->sc.option&OPTION_INVISIBLE))
 				clif_clearunit_single(bl->id,CLR_OUTSIGHT,tsd->fd);
+			break;
+		case BL_ASSISTANT:
+			clif_assistant_vanish(bl->id, tsd->fd);
 			break;
 		default:
 			if((vd=status_get_viewdata(bl)) && vd->class_ != JT_INVISIBLE)
@@ -10159,6 +10172,16 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 
 				clif_send(&packet, sizeof(packet), src, target);
 			}
+		}
+			break;
+		case BL_ASSISTANT: {
+			PACKET_ZC_ACK_REQNAME_TITLE packet{};
+			auto* ad = (assistant_data*)bl;
+			packet.packet_id = HEADER_ZC_ACK_REQNAME_TITLE;
+			packet.gid = bl->id;
+			safestrncpy(packet.name, ad->name, NAME_LENGTH);
+
+			clif_send(&packet, sizeof(packet), src, target);
 		}
 			break;
 		case BL_CHAT:
@@ -22052,6 +22075,245 @@ TIMER_FUNC( clif_ping_timer ){
 	return 0;
 }
 
+void clif_spawn_assistant(assistant_data* ad, map_session_data* sd)
+{
+	nullpo_retv(ad);
+
+	PACKET_ZC_ASSISTANT_ENTRY2 p{};
+	p.packetType = HEADER_ZC_ASSISTANT_ENTRY2;
+	p.GID = ad->bl.id;
+	p.job = ad->vd.class_;
+	p.xPos = ad->bl.x;
+	p.yPos = ad->bl.y;
+	p.sex = ad->vd.sex;
+	p.hair_style = (uint8)ad->vd.hair_style;
+	p.hair_color = (uint8)ad->vd.hair_color;
+	p.weapon = ad->vd.weapon;
+	p.shield = ad->vd.shield;
+	p.head_top = ad->vd.head_top;
+	p.head_mid = ad->vd.head_mid;
+	p.head_bottom = ad->vd.head_bottom;
+	p.robe = ad->vd.robe;
+	p.cloth_color = ad->vd.cloth_color;
+	safestrncpy(p.name, ad->name, NAME_LENGTH);
+
+	if (sd != nullptr) {
+		clif_send(&p, sizeof(PACKET_ZC_ASSISTANT_ENTRY2), &sd->bl, SELF);
+		clif_showvendingboard(&ad->bl, ad->message, sd->fd);
+	}
+	else {
+		clif_send(&p, sizeof(PACKET_ZC_ASSISTANT_ENTRY2), &ad->bl, AREA_WOS);
+		if (ad->vender_id != 0) {
+			clif_showvendingboard(&ad->bl, ad->message, 0);
+		}
+	}
+}
+
+void clif_assistant_vanish(uint32 gid, int fd)
+{
+	WFIFOHEAD(fd, sizeof(PACKET_ZC_ASSISTANT_VANISH));
+	auto* p = (PACKET_ZC_ASSISTANT_VANISH*)WFIFOP(fd, 0);
+	p->packetType = HEADER_ZC_ASSISTANT_VANISH;
+	p->GID = gid;
+	WFIFOSET(fd, sizeof(PACKET_ZC_ASSISTANT_VANISH));
+}
+
+void clif_open_assistant_store(map_session_data* sd, int itemCount)
+{
+#if ENABLE_VENDING_ASSISTANT
+	nullpo_retv(sd);
+	int fd = sd->fd;
+
+	int tradableCount = 0;
+	uint16 tradableIndices[MAX_INVENTORY]; // Allocate as much as MAX_INVENTORY for now
+	for (int i = 0; i < MAX_INVENTORY; ++i) {
+		auto* itm = &sd->inventory.u.items_inventory[i];
+
+		if (itm == nullptr || itm->nameid == 0 || itm->amount < 1)
+			continue;
+		if (pc_can_trade_item(sd, i)) {
+			tradableIndices[tradableCount] = i;
+			tradableCount++;
+		}
+	}
+
+	uint16 length = 5 + (tradableCount * sizeof(uint16));
+	WFIFOHEAD(fd, length);
+	PACKET_ZC_OPEN_ASSISTANT_STORE* p = (PACKET_ZC_OPEN_ASSISTANT_STORE*)WFIFOP(fd, 0);
+	p->PacketType = 0x0A7E;
+	p->NumItem = itemCount;
+	p->PacketLength = length;
+	memcpy(p->availableIndices, tradableIndices, tradableCount * sizeof(uint16));
+
+	clif_send(p, length, &sd->bl, SELF);
+#endif
+}
+
+void clif_assistant_store_ack(map_session_data* sd, int code, int subcode)
+{
+#if ENABLE_VENDING_ASSISTANT
+	PACKET_ZC_ACK_ASSISTANT_STORE p{};
+	p.PacketType = HEADER_ZC_ACK_ASSITANT_STORE;
+	p.Code = code;
+	p.SubCode = subcode;
+
+	clif_send(&p, sizeof(PACKET_ZC_ACK_ASSISTANT_STORE), &sd->bl, SELF);
+#endif
+}
+
+void clif_parse_cancel_req_open_store(int fd, map_session_data* sd)
+{
+#if ENABLE_VENDING_ASSISTANT
+	nullpo_retv(sd);
+
+	if (!sd->state.using_vending_assistant || !sd->state.prevend) {
+		return;
+	}
+	sd->state.using_vending_assistant = sd->state.prevend = 0;
+	sd->state.workinprogress = WIP_DISABLE_NONE;
+
+	clif_assistant_store_ack(sd, static_cast<uint8>(e_assistant_store_code::MERCHANTSHOPMAKEWND), static_cast<uint8>(e_assistant_store_result::USER_CANCELLED));
+#endif
+}
+
+void clif_parse_open_assistant_store(int fd, map_session_data* sd)
+{
+#if ENABLE_VENDING_ASSISTANT
+	nullpo_retv(sd);
+
+	if (!sd->state.using_vending_assistant || !sd->state.prevend) {
+		return;
+	}
+	if (sd->sc.data[SC_NOCHAT] && sd->sc.data[SC_NOCHAT]->val1 & MANNER_NOROOM) {
+		return;
+	}
+
+	PACKET_CZ_OPEN_ASSISTANT_STORE* p = (PACKET_CZ_OPEN_ASSISTANT_STORE*)RFIFOP(fd, 0);
+	int dynamicDataSize = p->PacketLength - (2 + 2 + MESSAGE_SIZE + 2 + 2);
+	int count = dynamicDataSize / sizeof(PACKET_CZ_OPEN_ASSISTANT_STORE_sub);
+
+	if (p->ShopName[0] == '\0') {
+		clif_authfail_fd(fd, 0);
+		return; // Invalid shop name, probably forged packet
+	}
+	else if (map_getmapflag(sd->bl.m, MF_NOVENDING)) {
+		clif_displaymessage(sd->fd, msg_txt(sd, 276)); // "You can't open a shop on this map"
+	}
+	else if (map_getcell(sd->bl.m, p->xPos, p->yPos, CELL_CHKNOVENDING)) {
+		clif_displaymessage(sd->fd, msg_txt(sd, 204)); // "You can't open a shop on this cell."
+	}
+	else if (distance_blxy(&sd->bl, p->xPos, p->yPos) >= AREA_SIZE) {
+		clif_authfail_fd(fd, 0); // Probably forged packet
+		return;
+	}
+	else if (battle_config.min_npc_vendchat_distance > 0 &&
+		map_foreachinarea(npc_isnear_sub, sd->bl.m, p->xPos - battle_config.min_npc_vendchat_distance, p->yPos + battle_config.min_npc_vendchat_distance, p->xPos + battle_config.min_npc_vendchat_distance, p->yPos - battle_config.min_npc_vendchat_distance, BL_NPC, 0)) {
+		clif_skill_fail(sd, 1, USESKILL_FAIL_THERE_ARE_NPC_AROUND, 0);
+	}
+	else if (map_count_oncell(sd->bl.m, p->xPos, p->yPos, BL_ASSISTANT|BL_PC|BL_NPC, 0) > 0) {
+		clif_skill_fail(sd, 1, USESKILL_FAIL_THERE_ARE_NPC_AROUND, 0);
+	}
+	else if (dynamicDataSize % sizeof(PACKET_CZ_OPEN_ASSISTANT_STORE_sub) != 0) {
+		clif_authfail_fd(fd, 0); // Probably forged packet
+		return;
+	}
+	else {
+		auto result = vending_open_assistant(sd, p->ShopName, count, p->xPos, p->yPos, p->entries);
+		if (result != 0) {
+			clif_skill_fail(sd, 1, USESKILL_FAIL_LEVEL, 0);
+			return;
+		}
+		clif_assistant_store_ack(sd, static_cast<uint8>(e_assistant_store_code::MERCHANTSHOPMAKEWND), static_cast<uint8>(e_assistant_store_result::SUCCESS));
+	}
+#endif
+}
+
+void clif_assistant_store_itemlist(map_session_data* sd, assistant_data* ad)
+{
+#if ENABLE_VENDING_ASSISTANT
+	nullpo_retv(sd);
+	nullpo_retv(ad);
+
+	int fd = sd->fd;
+	uint16 len = sizeof(PACKET_ZC_ASSISTANT_STORE_ITEMLIST2) + ad->vend_num * sizeof(struct PACKET_ZC_PC_PURCHASE_ITEMLIST_FROMMC_sub);
+
+	WFIFOHEAD(fd, len);
+	auto* p = (PACKET_ZC_ASSISTANT_STORE_ITEMLIST2*)WFIFOP(fd, 0);
+	p->PacketType = HEADER_ZC_ASSISTANT_STORE_ITEMLIST2;
+	p->PacketLength = len;
+	p->GID = ad->bl.id;
+	p->MarketId = ad->vender_id;
+	p->MyShop = ad->owner_id == sd->status.char_id;
+	p->TimeLeftMs = ad->expire == 0 ? UINT32_MAX : (uint32) tick_diff(ad->expire, time(NULL)) * 1000;
+	for (int i = 0; i < ad->vend_num; ++i) {
+		auto nameid = ad->items[i].item.nameid;
+		auto* data = itemdb_search(nameid);
+
+		p->soldItems[i].index = i+1; // Index starts at 1
+		p->soldItems[i].amount = ad->items[i].amount;
+		p->soldItems[i].price = ad->items[i].price;
+
+		p->soldItems[i].itemType = itemtype(nameid);
+		p->soldItems[i].itemId = client_nameid(nameid);
+		p->soldItems[i].identified = ad->items[i].item.identify;
+		p->soldItems[i].damaged = ad->items[i].item.attribute;
+		p->soldItems[i].refine = ad->items[i].item.refine;
+		clif_addcards(&p->soldItems[i].slot, &ad->items[i].item);
+#if PACKETVER >= 20150226
+		clif_add_random_options(p->soldItems[i].option_data, &ad->items[i].item);
+#if PACKETVER >= 20160921
+		p->soldItems[i].location = pc_equippoint_sub(sd, data);
+		p->soldItems[i].viewSprite = data->look;
+#if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724
+		p->soldItems[i].enchantgrade = ad->items[i].item.enchantgrade;
+#endif
+#endif
+#endif
+	}
+
+	WFIFOSET(fd, len);
+#endif
+}
+
+void clif_parse_req_close_assistant_store(int fd, map_session_data* sd)
+{
+#if ENABLE_VENDING_ASSISTANT
+	nullpo_retv(sd);
+
+	auto* p = (PACKET_CZ_REQ_CLOSE_ASSISTANT_SHOP*)RFIFOP(fd, 0);
+	auto ad = vending_gid2ad(p->GID);
+	if (ad == nullptr) {
+		return;
+	}
+	else if (ad->owner_id != sd->status.char_id) {
+		return;
+	}
+	else {
+		ad->close();
+		clif_msg(sd, ASSISTANT_STORE_CLOSED);
+	}
+#endif
+}
+
+void clif_parse_gm_close_shop(int fd, map_session_data* sd)
+{
+#if ENABLE_VENDING_ASSISTANT
+	nullpo_retv(sd);
+
+	if (!pc_can_use_command(sd, "kick", COMMAND_ATCOMMAND)) {
+		return;
+	}
+
+	auto* p = (PACKET_CZ_GM_CLOSE_SHOP*)RFIFOP(fd, 0);
+	auto ad = vending_gid2ad(p->GID);
+
+	if (ad == nullptr) {
+		return;
+	}
+	ad->close();
+	clif_GM_kickack(sd, 1); // Custom response packet
+#endif
+}
 /**
  * Opens the refine UI on the designated client.
  * 0aa0

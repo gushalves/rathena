@@ -227,6 +227,152 @@ struct PACKET_CZ_REQ_STYLE_CLOSE{
 	int16 packetType;
 } __attribute__((packed));
 
+#ifdef ENABLE_VENDING_ASSISTANT
+struct PACKET_ZC_OPEN_ASSISTANT_STORE {
+	int16 PacketType;
+	uint16 PacketLength;
+	uint8 NumItem;
+	uint16 availableIndices[];
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(ZC_OPEN_ASSISTANT_STORE, 0x0A7E);
+
+/*
+struct PACKET_CZ_REQ_OPEN_BUYING_STORE {
+	int16 packetType;
+	int16 packetLength;
+	uint32 zenyLimit;
+	uint8 result;
+	char storeName[MESSAGE_SIZE];
+	struct PACKET_CZ_REQ_OPEN_BUYING_STORE_sub items[];
+} __attribute__((packed));
+*/
+struct PACKET_CZ_OPEN_ASSISTANT_STORE_sub {
+	uint16 index;
+	uint16 amount;
+	uint32 value;
+} __attribute__((packed));
+
+struct PACKET_CZ_OPEN_ASSISTANT_STORE {
+	int16 PacketType;
+	uint16 PacketLength;
+	char ShopName[MESSAGE_SIZE];
+	int16 xPos;
+	int16 yPos;
+	struct PACKET_CZ_OPEN_ASSISTANT_STORE_sub entries[];
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(CZ_OPEN_ASSISTANT_STORE, 0x0A7F);
+
+struct PACKET_CZ_REQ_CLOSE_ASSISTANT_SHOP
+{
+	int16 PacketType;
+	uint32 GID;
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(CZ_REQ_CLOSE_ASSISTANT_SHOP, 0x0A80);
+
+struct PACKET_ZC_ACK_ASSISTANT_STORE
+{
+	int16 PacketType;
+	uint8 Code;
+	uint8 SubCode;
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(ZC_ACK_ASSITANT_STORE, 0x0A81);
+
+struct PACKET_ZC_ASSISTANT_ENTRY
+{
+	int16 packetType;
+	uint32 GID;
+	uint16 job;
+	uint16 xPos;
+	uint16 yPos;
+	uint8 sex;
+	uint8 head;
+	uint8 headpalette;
+	uint32 weapon;
+	uint32 shield;
+	uint16 accessory;
+	uint16 accessory2;
+	uint16 accessory3;
+	uint16 robe;
+	uint32 unknown;
+	char name[NAME_LENGTH];
+	uint16 bodyPalette;
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(ZC_ASSISTANT_ENTRY, 0xA89);
+
+struct PACKET_ZC_ASSISTANT_VANISH
+{
+	int16 packetType;
+	uint32 GID;
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(ZC_ASSISTANT_VANISH, 0xA8A);
+
+struct PACKET_CZ_CANCEL_REQ_OPEN_STORE
+{
+	int16 packetType;
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(CZ_CANCEL_REQ_OPEN_STORE, 0x0A8C);
+
+
+struct PACKET_ZC_ASSISTANT_STORE_ITEMLIST {
+	int16 PacketType;
+	uint16 PacketLength;
+	uint32 GID;
+	uint32 MarketId;
+	uint8 MyShop;
+	uint32 TimeLeftMs;
+	PACKET_ZC_PC_PURCHASE_ITEMLIST_FROMMC_sub soldItems[];
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(ZC_ASSISTANT_STORE_ITEMLIST, 0x0A91);
+
+
+struct PACKET_ZC_ASSISTANT_STORE_ITEMLIST2 {
+	int16 PacketType;
+	uint16 PacketLength;
+	uint32 GID;
+	uint32 MarketId;
+	uint8 MyShop;
+	uint32 TimeLeftMs;
+	PACKET_ZC_PC_PURCHASE_ITEMLIST_FROMMC_sub soldItems[];
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(ZC_ASSISTANT_STORE_ITEMLIST2, 0x0B62);
+
+struct PACKET_ZC_OPEN_ASSISTANT_BUYINGSTORE
+{
+	int16 PacketType;
+	uint8 NumItem;
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(ZC_OPEN_ASSISTANT_BUYINGSTORE, 0x0A93);
+
+struct PACKET_ZC_ASSISTANT_ENTRY2
+{
+	int16 packetType;
+	uint32 GID;
+	uint32 job;
+	uint16 xPos;
+	uint16 yPos;
+	uint8 sex;
+	uint8 hair_style;
+	uint8 hair_color;
+	uint32 weapon;
+	uint32 shield;
+	uint16 head_top;
+	uint16 head_mid;
+	uint16 head_bottom;
+	uint16 robe;
+	uint32 unknown;
+	char name[NAME_LENGTH];
+	uint16 cloth_color;
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(ZC_ASSISTANT_ENTRY2, 0xB05);
+
+struct PACKET_CZ_GM_CLOSE_SHOP
+{
+	int16 PacketType;
+	uint32 GID;
+} __attribute__((packed));
+DEFINE_PACKET_HEADER(CZ_GM_CLOSE_SHOP, 0xAF9);
+#endif
+
 // NetBSD 5 and Solaris don't like pragma pack but accept the packed attribute
 #if !defined( sun ) && ( !defined( __NETBSD__ ) || __NetBSD_Version__ >= 600000000 )
 	#pragma pack( pop )

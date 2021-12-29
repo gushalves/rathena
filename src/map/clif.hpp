@@ -525,6 +525,8 @@ enum clif_messages : uint16_t {
 	SKILL_NEED_REVOLVER = 0x9fd,
 	SKILL_NEED_HOLY_BULLET = 0x9fe,
 	SKILL_NEED_GRENADE = 0xa01,
+	ASSISTANT_VENDOR_EXISTS = 0xba6,
+	ASSISTANT_STORE_CLOSED = 0xb69,
 	GUILD_MASTER_WOE = 0xb93, /// <"Currently in WoE hours, unable to delegate Guild leader"
 	GUILD_MASTER_DELAY = 0xb94, /// <"You have to wait for one day before delegating a new Guild leader"
 	MSG_ATTENDANCE_DISABLED = 0xd92,
@@ -1160,5 +1162,25 @@ void clif_pet_evolution_result( struct map_session_data* sd, e_pet_evolution_res
 void clif_parse_skill_toid( struct map_session_data* sd, uint16 skill_id, uint16 skill_lv, int target_id );
 
 void clif_inventory_expansion_info( struct map_session_data* sd );
+
+/// Vending Assistant
+enum class e_assistant_store_code : uint8 {
+	MERCHANTSHOPMAKEWND = 100,
+	MERCHANTSHOPMAKEWND2 = 101,
+};
+enum class e_assistant_store_result : uint8 {
+	SUCCESS = 0,
+	DISALLOWED_LOCATION = 2,
+	THERE_ARE_NPC_AROUND = 3,
+	USER_CANCELLED = 6,
+	OVER_WEIGHT = 8,
+};
+
+void clif_open_assistant_store(map_session_data* sd, int itemCount);
+void clif_parse_open_assistant_store(int fd, map_session_data* sd);
+void clif_spawn_assistant(assistant_data* ad, map_session_data* sd = nullptr);
+void clif_assistant_vanish(uint32 gid, int fd);
+void clif_assistant_store_ack(map_session_data* sd, int code, int subcode);
+void clif_assistant_store_itemlist(map_session_data* sd, assistant_data* ad);
 
 #endif /* CLIF_HPP */

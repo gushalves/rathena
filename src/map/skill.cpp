@@ -924,6 +924,25 @@ bool skill_isNotOk(uint16 skill_id, struct map_session_data *sd)
 				clif_skill_fail(sd,skill_id,USESKILL_FAIL_THERE_ARE_NPC_AROUND,0);
 				return true;
 			}
+			break;
+		case ALL_ASSISTANT_VENDING:
+			if (map_getmapflag(sd->bl.m, MF_NOVENDING)) {
+				clif_displaymessage(sd->fd, msg_txt(sd, 276)); // "You can't open a shop on this map"
+				clif_skill_fail(sd, skill_id, USESKILL_FAIL_LEVEL, 0);
+				return true;
+			}
+			if (vending_get_assistant(sd) != nullptr) {
+				clif_msg(sd, ASSISTANT_VENDOR_EXISTS);
+				return true;
+			}
+			break;
+		case ALL_ASSISTANT_BUYING:
+			if (map_getmapflag(sd->bl.m, MF_NOVENDING)) {
+				clif_displaymessage(sd->fd, msg_txt(sd, 276)); // "You can't open a shop on this map"
+				clif_skill_fail(sd, skill_id, USESKILL_FAIL_LEVEL, 0);
+				return true;
+			}
+			break;
 		case MC_IDENTIFY:
 			return false; // always allowed
 		case WZ_ICEWALL:
@@ -8897,21 +8916,46 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 	case MC_VENDING:
 		if(sd)
 		{	//Prevent vending of GMs with unnecessary Level to trade/drop. [Skotlex]
-			if ( !pc_can_give_items(sd) )
+			if (sd->state.prevend || sd->state.using_vending_assistant)
+				break;
+			else if ( !pc_can_give_items(sd) )
 				clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
 			else {
 				sd->state.prevend = 1;
 				sd->state.workinprogress = WIP_DISABLE_ALL;
+				sd->state.using_vending_assistant = false;
 				sd->vend_skill_lv = skill_lv;
 				ARR_FIND(0, MAX_CART, i, sd->cart.u.items_cart[i].nameid && sd->cart.u.items_cart[i].id == 0);
-				if (i < MAX_CART)
+				if (i < MAX_CART) {
+					sd->state.pending_vending_ui = 1;
 					intif_storage_save(sd, &sd->cart);
+				}
 				else
 					clif_openvendingreq(sd,2+skill_lv);
 			}
 		}
 		break;
-
+	case ALL_ASSISTANT_VENDING:
+		if (sd) {
+			if (!pc_can_give_items(sd)) {
+				clif_skill_fail(sd, skill_id, USESKILL_FAIL_LEVEL, 0);
+			}
+			else {
+				sd->state.prevend = 1;
+				sd->state.workinprogress = WIP_DISABLE_ALL;
+				sd->state.using_vending_assistant = true;
+				sd->vend_skill_lv = skill_lv;
+				ARR_FIND(0, MAX_INVENTORY, i, sd->inventory.u.items_inventory[i].nameid && sd->inventory.u.items_inventory[i].id == 0);
+				if (i < MAX_INVENTORY) {
+					sd->state.pending_vending_ui = 1;
+					chrif_save(sd, CSAVE_INVENTORY | CSAVE_CART);
+				}
+				else {
+					clif_open_assistant_store(sd, min(2 + skill_lv, MAX_ASSISTANT_VENDING));
+				}
+			}
+		}
+		break;
 	case AL_TELEPORT:
 	case ALL_ODINS_RECALL:
 		if(sd)

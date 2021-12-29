@@ -1,0 +1,15 @@
+ALTER TABLE `vendings`
+	ADD COLUMN `assistant` TINYINT(1) NOT NULL DEFAULT 0 AFTER `autotrade`,
+	ADD COLUMN `job` INT(10) NOT NULL DEFAULT 0 AFTER `assistant`,
+	ADD COLUMN `hair_style` INT(10) NOT NULL DEFAULT 0 AFTER `job`,
+	ADD COLUMN `hair_color` INT(10) NOT NULL DEFAULT 0 AFTER `hair_style`,
+	ADD COLUMN `weapon` INT(10) NOT NULL DEFAULT 0 AFTER `hair_color`,
+	ADD COLUMN `shield` INT(10) NOT NULL DEFAULT 0 AFTER `weapon`,
+	ADD COLUMN `head_top` INT(10) NOT NULL DEFAULT 0 AFTER `shield`,
+	ADD COLUMN `head_mid` INT(10) NOT NULL DEFAULT 0 AFTER `head_top`,
+	ADD COLUMN `head_bottom` INT(10) NOT NULL DEFAULT 0 AFTER `head_mid`,
+	ADD COLUMN `robe` INT(10) NOT NULL DEFAULT 0 AFTER `head_bottom`,
+	ADD COLUMN `cloth_color` INT(10) NOT NULL DEFAULT 0 AFTER `robe`,
+	ADD COLUMN `bodystyle` TINYINT(8) NOT NULL DEFAULT 0 AFTER `expire`,
+	ADD INDEX `assistant` (`assistant`),
+	ADD INDEX `expire` (`expire`);

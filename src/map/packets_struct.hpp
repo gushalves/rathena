@@ -79,7 +79,7 @@ enum packet_headers {
 	authokType = 0x73,
 #elif PACKETVER < 20141022
 	authokType = 0x2eb,
-// Some clients smaller than 20160330 cant be tested [4144]
+	// Some clients smaller than 20160330 cant be tested [4144]
 #elif PACKETVER < 20160330
 	authokType = 0xa18,
 #else
@@ -496,7 +496,7 @@ struct packet_authok {
 #if PACKETVER >= 20080102
 	int16 font;
 #endif
-// Some clients smaller than 20160330 cant be tested [4144]
+	// Some clients smaller than 20160330 cant be tested [4144]
 #if PACKETVER >= 20141022 && PACKETVER < 20160330
 	uint8 sex;
 #endif
@@ -730,7 +730,7 @@ struct packet_spawn_unit {
 #if PACKETVER >= 20150513
 	int16 body;
 #endif
-/* Might be earlier, this is when the named item bug began */
+	/* Might be earlier, this is when the named item bug began */
 #if PACKETVER >= 20131223
 	char name[NAME_LENGTH];
 #endif
@@ -804,7 +804,7 @@ struct packet_unit_walking {
 #if PACKETVER >= 20150513
 	uint16 body;
 #endif
-/* Might be earlier, this is when the named item bug began */
+	/* Might be earlier, this is when the named item bug began */
 #if PACKETVER >= 20131223
 	char name[NAME_LENGTH];
 #endif
@@ -876,7 +876,7 @@ struct packet_idle_unit {
 #if PACKETVER >= 20150513
 	uint16 body;
 #endif
-/* Might be earlier, this is when the named item bug began */
+	/* Might be earlier, this is when the named item bug began */
 #if PACKETVER >= 20131223
 	char name[NAME_LENGTH];
 #endif
@@ -920,18 +920,18 @@ struct packet_maptypeproperty2 {
 	int16 PacketType;
 	int16 type;
 	struct {
-		uint32 party             : 1;  // Show attack cursor on non-party members (PvP)
-		uint32 guild             : 1;  // Show attack cursor on non-guild members (GvG)
-		uint32 siege             : 1;  // Show emblem over characters' heads when in GvG (WoE castle)
-		uint32 mineffect         : 1;  // Automatically enable /mineffect
-		uint32 nolockon          : 1;  // TODO: What does this do? (shows attack cursor on non-party members)
-		uint32 countpk           : 1;  /// Show the PvP counter
-		uint32 nopartyformation  : 1;  /// Prevent party creation/modification
-		uint32 bg                : 1;  // TODO: What does this do? Probably related to Battlegrounds, but I'm not sure on the effect
-		uint32 nocostume         : 1;  /// Does not show costume sprite.
-		uint32 usecart           : 1;  /// Allow opening cart inventory
+		uint32 party : 1;  // Show attack cursor on non-party members (PvP)
+		uint32 guild : 1;  // Show attack cursor on non-guild members (GvG)
+		uint32 siege : 1;  // Show emblem over characters' heads when in GvG (WoE castle)
+		uint32 mineffect : 1;  // Automatically enable /mineffect
+		uint32 nolockon : 1;  // TODO: What does this do? (shows attack cursor on non-party members)
+		uint32 countpk : 1;  /// Show the PvP counter
+		uint32 nopartyformation : 1;  /// Prevent party creation/modification
+		uint32 bg : 1;  // TODO: What does this do? Probably related to Battlegrounds, but I'm not sure on the effect
+		uint32 nocostume : 1;  /// Does not show costume sprite.
+		uint32 usecart : 1;  /// Allow opening cart inventory
 		uint32 summonstarmiracle : 1;  // TODO: What does this do? Related to Taekwon Masters, but I have no idea.
-		uint32 SpareBits         : 21; /// Currently ignored, reserved for future updates
+		uint32 SpareBits : 21; /// Currently ignored, reserved for future updates
 	} flag;
 } __attribute__((packed));
 

@@ -56,6 +56,7 @@ void map_msg_reload(void);
 #define MAX_DROP_PER_MAP 48
 #define MAX_IGNORE_LIST 20 	// official is 14
 #define MAX_VENDING 12
+#define MAX_ASSISTANT_VENDING 5
 #define MAX_MAP_SIZE 512*512 	// Wasn't there something like this already? Can't find it.. [Shinryo]
 
 //The following system marks a different job ID system used by the map server,
@@ -278,6 +279,7 @@ enum bl_type : uint16{
 	BL_NPC   = 0x080,
 	BL_CHAT  = 0x100,
 	BL_ELEM  = 0x200,
+	BL_ASSISTANT = 0x400,
 
 	BL_ALL   = 0xFFF,
 };
@@ -1208,6 +1210,7 @@ typedef struct pet_data         TBL_PET;
 typedef struct homun_data       TBL_HOM;
 typedef struct s_mercenary_data   TBL_MER;
 typedef struct s_elemental_data	TBL_ELEM;
+typedef struct assistant_data   TBL_ASSISTANT;
 
 #define BL_CAST(type_, bl) \
 	( ((bl) == (struct block_list*)NULL || (bl)->type != (type_)) ? (T ## type_ *)NULL : (T ## type_ *)(bl) )
@@ -1230,6 +1233,7 @@ extern char mob_skill_table[32];
 extern char mob_skill2_table[32];
 extern char vendings_table[32];
 extern char vending_items_table[32];
+extern char vending_assistant_items_table[32];
 extern char market_table[32];
 extern char roulette_table[32];
 extern char guild_storage_log_table[32];

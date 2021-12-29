@@ -25633,6 +25633,21 @@ BUILDIN_FUNC(getenchantgrade){
 	return SCRIPT_CMD_SUCCESS;
 }
 
+BUILDIN_FUNC(set_assistant_duration)
+{
+	map_session_data* sd;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, -1);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	sd->assistant_duration = script_getnum(st, 2);
+
+	script_pushint(st, 0);
+	return SCRIPT_CMD_SUCCESS;
+}
+
 /*==========================================
  * mob_setidleevent( <monster game ID>, "<event label>" )
  *------------------------------------------*/
@@ -26383,6 +26398,7 @@ struct script_function buildin_func[] = {
 
 	BUILDIN_DEF(setinstancevar,"rvi"),
 	BUILDIN_DEF(openstylist, "?"),
+	BUILDIN_DEF(set_assistant_duration, "i?"),
 #include "../custom/script_def.inc"
 
 	{NULL,NULL,NULL},

@@ -3514,7 +3514,10 @@ static bool intif_parse_StorageReceived(int fd)
 			}else if( sd->state.prevend ){
 				clif_clearcart(sd->fd);
 				clif_cartlist(sd);
-				clif_openvendingreq(sd, sd->vend_skill_lv+2);
+				if (sd->state.pending_vending_ui && !sd->state.using_vending_assistant) {
+					clif_openvendingreq(sd, sd->vend_skill_lv + 2);
+					sd->state.pending_vending_ui = 0;
+				}
 			}
 			break;
 
@@ -3540,14 +3543,19 @@ static bool intif_parse_StorageReceived(int fd)
  */
 static void intif_parse_StorageSaved(int fd)
 {
+	map_session_data* sd = map_id2sd(RFIFOL(fd, 2));
+
 	if (RFIFOB(fd, 6)) {
 		switch (RFIFOB(fd, 7)) {
 			case TABLE_INVENTORY: //inventory
 				//ShowInfo("Inventory has been saved (AID: %d).\n", RFIFOL(fd, 2));
+				if (sd && sd->state.prevend && sd->state.pending_vending_ui && sd->state.using_vending_assistant) {
+					clif_open_assistant_store(sd, min(sd->vend_skill_lv + 2, MAX_ASSISTANT_VENDING));
+					sd->state.pending_vending_ui = 0;
+				}
 				break;
 			case TABLE_STORAGE: //storage
 				{
-					struct map_session_data *sd = map_id2sd( RFIFOL( fd, 2 ) );
 					struct s_storage* stor = nullptr;
 
 					if( RFIFOB( fd, 8 ) ){
@@ -3572,8 +3580,6 @@ static void intif_parse_StorageSaved(int fd)
 			case TABLE_CART: // cart
 				//ShowInfo("Cart has been saved (AID: %d).\n", RFIFOL(fd, 2));
 				{
-					struct map_session_data *sd = map_id2sd(RFIFOL(fd, 2));
-
 					if( sd && sd->state.prevend ){
 						intif_storage_request(sd,TABLE_CART,0,STOR_MODE_ALL);
 					}

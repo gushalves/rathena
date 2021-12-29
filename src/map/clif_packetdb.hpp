@@ -2445,4 +2445,23 @@
 	parseable_packet( 0xb93, 12, clif_parse_dull, 0 );
 #endif
 
+#ifdef ENABLE_VENDING_ASSISTANT
+	packet(HEADER_ZC_OPEN_ASSISTANT_STORE, -1); // 0x0A7E implemented
+	parseable_packet(HEADER_CZ_OPEN_ASSISTANT_STORE, -1, clif_parse_open_assistant_store, 0); // 0x0A7F implemented
+	parseable_packet(HEADER_CZ_REQ_CLOSE_ASSISTANT_SHOP, sizeof(PACKET_CZ_REQ_CLOSE_ASSISTANT_SHOP), clif_parse_req_close_assistant_store, 0); // 0x0A80
+	packet(HEADER_ZC_ACK_ASSITANT_STORE, sizeof(PACKET_ZC_ACK_ASSISTANT_STORE)); // 0x0A81 implemented
+	// packet(HEADER_ZC_ASSISTANT_ENTRY, sizeof(PACKET_ZC_ASSISTANT_ENTRY)); // 0x0A89 won't implement
+	packet(HEADER_ZC_ASSISTANT_VANISH, sizeof(PACKET_ZC_ASSISTANT_VANISH)); // 0x0A8A implemented
+	parseable_packet(HEADER_CZ_CANCEL_REQ_OPEN_STORE, sizeof(PACKET_CZ_CANCEL_REQ_OPEN_STORE), clif_parse_cancel_req_open_store, 0); // 0x0A8C implemented
+	packet(HEADER_ZC_ASSISTANT_STORE_ITEMLIST, -1); // 0x0A91
+	packet(HEADER_ZC_ASSISTANT_STORE_ITEMLIST2, -1); // 0x0B62 implemented
+	// packet(HEADER_ZC_ASSISTANT_BUYINGSTORE_ITEMLIST, -1); // 0x0A8D
+	// parseable_packet(HEADER_CZ_REQ_OPEN_ASSISTANT_BUYINGSTORE, -1, clif_parse_dull, 0); // 0x0A92
+	packet(HEADER_ZC_OPEN_ASSISTANT_BUYINGSTORE, sizeof(PACKET_ZC_OPEN_ASSISTANT_BUYINGSTORE)); // 0x0A93
+	// parseable_packet(HEADER_CZ_CANCEL_REQ_OPEN_BUYINGSTORE, sizeof(PACKET_CZ_CANCEL_REQ_OPEN_BUYINGSTORE), clif_parse_dull, 0); // 0x0A94
+	packet(HEADER_ZC_ASSISTANT_ENTRY2, sizeof(PACKET_ZC_ASSISTANT_ENTRY2)); // 0x0B05 implemented
+	parseable_packet(HEADER_CZ_GM_CLOSE_SHOP, sizeof(PACKET_CZ_GM_CLOSE_SHOP), clif_parse_gm_close_shop, 0);
+	
+#endif
+
 #endif /* CLIF_PACKETDB_HPP */

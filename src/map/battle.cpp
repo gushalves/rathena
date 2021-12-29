@@ -10077,6 +10077,7 @@ static const struct _battle_data {
 	{ "keep_ap_on_logout",                  &battle_config.keep_ap_on_logout,               1,      0,      1,              },
 	{ "attack_machine_level_difference",    &battle_config.attack_machine_level_difference, 15,     0,      INT_MAX,        },
 
+	{ "persistent_assistant",               &battle_config.persistent_assistant,            1,      0,      1,              },
 #include "../custom/battle_config_init.inc"
 };
 
