@@ -48734,6 +48734,7 @@ Body:
     Type: Delayconsume
     Weight: 0
     Script: |
+      set_assistant_duration(24 * 60 * 60);
       itemskill "ALL_ASSISTANT_VENDING",1,true;
   - Id: 23349
     AegisName: Vend_Arbeit_2Lv
@@ -48741,6 +48742,7 @@ Body:
     Type: Delayconsume
     Weight: 0
     Script: |
+      set_assistant_duration(24 * 60 * 60);
       itemskill "ALL_ASSISTANT_VENDING",2,true;
   - Id: 23350
     AegisName: Vend_Arbeit_3Lv
@@ -48748,6 +48750,7 @@ Body:
     Type: Delayconsume
     Weight: 0
     Script: |
+      set_assistant_duration(24 * 60 * 60);
       itemskill "ALL_ASSISTANT_VENDING",3,true;
   - Id: 23351
     AegisName: Buy_Arbeit_1Lv
@@ -48755,6 +48758,7 @@ Body:
     Type: Delayconsume
     Weight: 0
     Script: |
+      set_assistant_duration(24 * 60 * 60);
       itemskill "ALL_ASSISTANT_BUYING",1,true;
   - Id: 23352
     AegisName: Buy_Arbeit_2Lv
@@ -48762,6 +48766,7 @@ Body:
     Type: Delayconsume
     Weight: 0
     Script: |
+      set_assistant_duration(24 * 60 * 60);
       itemskill "ALL_ASSISTANT_BUYING",2,true;
   - Id: 23352
     AegisName: Buy_Arbeit_3Lv
@@ -48769,6 +48774,7 @@ Body:
     Type: Delayconsume
     Weight: 0
     Script: |
+      set_assistant_duration(24 * 60 * 60);
       itemskill "ALL_ASSISTANT_BUYING",3,true;
   - Id: 23388
     AegisName: CookingBox10

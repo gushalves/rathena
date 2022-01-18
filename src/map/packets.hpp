@@ -351,18 +351,18 @@ struct PACKET_ZC_ASSISTANT_ENTRY2
 	uint16 xPos;
 	uint16 yPos;
 	uint8 sex;
-	uint8 hair_style;
-	uint8 hair_color;
+	uint16 hair_style;
 	uint32 weapon;
 	uint32 shield;
 	uint16 head_top;
 	uint16 head_mid;
 	uint16 head_bottom;
-	uint16 robe;
-	uint32 unknown;
-	char name[NAME_LENGTH];
+	uint16 hair_color;
 	uint16 cloth_color;
-} __attribute__((packed));
+	uint16 robe;
+	char name[NAME_LENGTH];
+	uint16 body_style;
+};
 DEFINE_PACKET_HEADER(ZC_ASSISTANT_ENTRY2, 0xB05);
 
 struct PACKET_CZ_GM_CLOSE_SHOP

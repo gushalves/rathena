@@ -22086,8 +22086,8 @@ void clif_spawn_assistant(assistant_data* ad, map_session_data* sd)
 	p.xPos = ad->bl.x;
 	p.yPos = ad->bl.y;
 	p.sex = ad->vd.sex;
-	p.hair_style = (uint8)ad->vd.hair_style;
-	p.hair_color = (uint8)ad->vd.hair_color;
+	p.hair_style = ad->vd.hair_style;
+	p.hair_color = ad->vd.hair_color;
 	p.weapon = ad->vd.weapon;
 	p.shield = ad->vd.shield;
 	p.head_top = ad->vd.head_top;
@@ -22095,6 +22095,7 @@ void clif_spawn_assistant(assistant_data* ad, map_session_data* sd)
 	p.head_bottom = ad->vd.head_bottom;
 	p.robe = ad->vd.robe;
 	p.cloth_color = ad->vd.cloth_color;
+	p.body_style = ad->vd.body_style;
 	safestrncpy(p.name, ad->name, NAME_LENGTH);
 
 	if (sd != nullptr) {
