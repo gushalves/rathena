@@ -21,7 +21,7 @@ struct s_vending {
 };
 
 struct s_assistant_vending_item {
-	item item;
+	struct item item;
 	uint16 index;
 	uint16 amount;
 	uint32 price;
