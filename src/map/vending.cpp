@@ -698,7 +698,7 @@ void do_init_vending_autotrade(void)
 	}
 
 	// Everything is loaded fine, their entries will be reinserted once they are loaded
-	if (Sql_Query( mmysql_handle, "DELETE FROM `%s`;", vendings_table ) != SQL_SUCCESS ||
+	if (Sql_Query( mmysql_handle, "DELETE FROM `%s` where `assistant` = 0;", vendings_table ) != SQL_SUCCESS ||
 		Sql_Query( mmysql_handle, "DELETE FROM `%s`;", vending_items_table ) != SQL_SUCCESS) {
 		Sql_ShowDebug(mmysql_handle);
 	}
@@ -1236,7 +1236,7 @@ void do_init_vending_assistant()
 			}
 
 			// Everything is loaded fine, their entries will be reinserted once they are loaded
-			if (Sql_Query(mmysql_handle, "DELETE FROM `%s`;", vendings_table) != SQL_SUCCESS ||
+			if (Sql_Query(mmysql_handle, "DELETE FROM `%s` where `assistant` = 1;", vendings_table) != SQL_SUCCESS ||
 				Sql_Query(mmysql_handle, "DELETE FROM `%s`;", vending_assistant_items_table) != SQL_SUCCESS) {
 				Sql_ShowDebug(mmysql_handle);
 			}
