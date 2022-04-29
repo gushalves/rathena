@@ -1291,7 +1291,7 @@ void do_init_vending(void)
 	vending_db = idb_alloc(DB_OPT_BASE);
 	vending_autotrader_db = uidb_alloc(DB_OPT_BASE);
 	if (Sql_Query(mmysql_handle,
-		"SELECT COUNT(1) as cnt FROM `%s` ", vendings_table) != SQL_SUCCESS)
+		"SELECT MAX(id) as max_id FROM `%s` ", vendings_table) != SQL_SUCCESS)
 	{
 		Sql_ShowDebug(mmysql_handle);
 	}
