@@ -1228,6 +1228,7 @@ void do_init_vending_assistant()
 					}
 					Sql_GetData(mmysql_handle, col++, &data, NULL); data ? ad->items[j].item.unique_id = strtoull(data, nullptr, 10) : 0;
 					Sql_GetData(mmysql_handle, col++, &data, NULL); ad->items[j].item.enchantgrade = (uint8)atoi(data);
+					ad->items[j].item.identify = 1;
 					j++;
 					items++;
 				}
