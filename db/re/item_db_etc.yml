@@ -48234,7 +48234,7 @@ Body:
       bonus2 bMagicAtkEle,Ele_Poison,7;
       bonus bUseSPrate,5;
   - Id: 300254
-    AegisName: aegis_300254
+    AegisName: Amitera_Card
     Name: Amitera Card
     Type: Card
     Weight: 10
@@ -48248,7 +48248,7 @@ Body:
          bonus bMaxHPrate,10;
       }
   - Id: 300255
-    AegisName: aegis_300255
+    AegisName: Litus_Card
     Name: Litus Card
     Type: Card
     Weight: 10
@@ -48263,7 +48263,7 @@ Body:
       bonus2 bMagicAtkEle,Ele_Wind,7;
       bonus bUseSPrate,5;
   - Id: 300256
-    AegisName: aegis_300256
+    AegisName: Fillia_Card
     Name: Fillia Card
     Type: Card
     Weight: 10
@@ -48278,7 +48278,7 @@ Body:
       bonus2 bMagicAtkEle,Ele_Fire,7;
       bonus bUseSPrate,5;
   - Id: 300257
-    AegisName: aegis_300257
+    AegisName: Vanilaqus_Card
     Name: Vanilaqus Card
     Type: Card
     Weight: 10
@@ -48293,7 +48293,7 @@ Body:
       bonus2 bMagicAtkEle,Ele_Water,7;
       bonus bUseSPrate,5;
   - Id: 300258
-    AegisName: aegis_300258
+    AegisName: Lava_Eater_Card
     Name: Lavaeter Card
     Type: Card
     Weight: 10
@@ -48308,7 +48308,7 @@ Body:
       bonus2 bMagicAtkEle,Ele_Dark,7;
       bonus bUseSPrate,5;
   - Id: 300259
-    AegisName: aegis_300259
+    AegisName: Fulgor_Card
     Name: Fulgor Card
     Type: Card
     Weight: 10
@@ -48323,7 +48323,7 @@ Body:
       bonus2 bMagicAtkEle,Ele_Earth,7;
       bonus bUseSPrate,5;
   - Id: 300260
-    AegisName: aegis_300260
+    AegisName: Napeo_Card
     Name: Napeo Card
     Type: Card
     Weight: 10
@@ -48337,7 +48337,7 @@ Body:
          bonus bMatk,60;
       }
   - Id: 300261
-    AegisName: aegis_300261
+    AegisName: Galensis_Card
     Name: Galensis Card
     Type: Card
     Weight: 10
@@ -48351,7 +48351,7 @@ Body:
          bonus bCritAtkRate,30;
       }
   - Id: 300262
-    AegisName: aegis_300262
+    AegisName: The_One_Card
     Name: The One Card
     Type: Card
     Weight: 10
